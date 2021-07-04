@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="container mt-3">
+    <table id="questions" class="table">
+        <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th class="text-center">Question</th>
+                <th class="text-center">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for question in questions %}
+            <tr>
+                <th class="text-center">{{ forloop.counter }}</th>
+                <td class="text-center">
+                    <a class="btn btn-link" href="{% url 'detail' %}?q={{ forloop.counter }}">
+                        {{ question.text }}
+                    </a>
+
+                </td>
+                <td class="text-center">
+                    {% if question.uuid in answers and answers %}
+                    Answered
+                    {% else %}
+                    Not answered
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a class="btn btn-primary" href="{% url 'results' %}">Finish quiz</a>
+</div>
+{% endblock body %}

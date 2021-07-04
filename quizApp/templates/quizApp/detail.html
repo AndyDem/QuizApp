@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="container mt-3">
+    <div class="row mb-3">
+        <div class="col">
+            <a class="btn btn-primary" href="{% url 'question_list' %}">Back to list of questions</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            {% for question in page_obj %}
+            <h2>{{ question.text }}</h2>
+            <table id="questions" class="table">
+                <form id="choice_form" method="POST">
+                    {% for choice in question.choices %}
+                    <tr>
+                        <th class="col-1">
+                            {% csrf_token %}
+                            <input type="checkbox" name="choice" value="{{ choice.uuid }}"
+                                onchange='$("#choice_form").submit();' {% if choice.uuid in answers %} checked {% endif %}>
+                        </th>
+                        <td>{{ choice.text }}</td>
+                    </tr>
+                    {% endfor %}
+                </form>
+            </table>
+            {% endfor %}
+
+            {% if page_obj.has_previous %}
+            <a class="btn btn-primary" href="?q={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Question {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+            <a class="btn btn-primary" href="?q={{ page_obj.next_page_number }}">next</a>
+            {% else %}
+            <a class="btn btn-primary" href="{% url 'results' %}">Finish quiz</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock body %}
