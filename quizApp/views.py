@@ -20,9 +20,10 @@ def index(request):
         request.session.pop('answers')
 
     continue_button = True if 'answers' in request.session else False
+    context = {'continue_button': continue_button}
 
     request.session['quiz_id'] = '1'
-    return render(request, 'quizApp/index.html', {'continue_button': continue_button})
+    return render(request, 'quizApp/index.html', context)
 
 
 class LogInView(BSModalLoginView):
@@ -53,11 +54,11 @@ def get_quiz_dto(quiz_id):
                         uuid=str(choice.id),
                         text=choice.text,
                         is_correct=choice.is_correct
-                    ) for choice in Choice.objects.filter(question_id=question.id)
-                ]
-            ) for question in Question.objects.filter(quiz=quiz_id)
-        ]
-    )
+                    )
+                    for choice in Choice.objects.filter(question_id=question.id)
+                ])
+            for question in Question.objects.filter(quiz=quiz_id)
+        ])
 
     return quiz_DTO
 
@@ -69,8 +70,10 @@ def questionList(request):
 
     quiz = get_quiz_dto(request.session['quiz_id'])
 
-    answers = request.session['answers'] if 'answers' in request.session else {
-    }
+    if 'answers' in request.session:
+        answers = request.session['answers']
+    else:
+        answers = {}
 
     return render(request, 'quizApp/question_list.html', {
         'questions': quiz.questions,
